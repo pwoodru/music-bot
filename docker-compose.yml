@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  lavalink:
+    image: ghcr.io/lavalink-devs/lavalink:4
+    container_name: lavalink
+    restart: unless-stopped
+    environment:
+      # CRITICAL: Limit Java Heap to 400MB for AMD instances
+      - _JAVA_OPTIONS=-Xmx400m
+    volumes:
+      - ./application.yml:/opt/lavalink/application.yml
+      # Mount plugins folder if you add manual plugins later
+      - ./plugins/:/opt/lavalink/plugins/
+    ports:
+      - "2333:2333"
+    networks:
+      - bot-network
+
+  bot:
+    build: .
+    container_name: music-bot
+    restart: unless-stopped
+    depends_on:
+      - lavalink
+    environment:
+      # These variables are pulled from the .env file on the server
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - LAVALINK_HOST=lavalink
+    networks:
+      - bot-network
+
+networks:
+  bot-network:
+    driver: bridge

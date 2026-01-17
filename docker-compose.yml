@@ -6,12 +6,10 @@ services:
     container_name: lavalink
     restart: unless-stopped
     environment:
-      # CRITICAL: Limit Java Heap to 400MB for AMD instances
-      - _JAVA_OPTIONS=-Xmx400m
+      - _JAVA_OPTIONS=-Xmx500m
     volumes:
-      - ./application.yml:/opt/lavalink/application.yml
-      # Mount plugins folder if you add manual plugins later
-      - ./plugins/:/opt/lavalink/plugins/
+      - ./application.yml:/opt/Lavalink/application.yml
+      - ./plugins/:/opt/Lavalink/plugins/
     ports:
       - "2333:2333"
     networks:
@@ -24,7 +22,6 @@ services:
     depends_on:
       - lavalink
     environment:
-      # These variables are pulled from the .env file on the server
       - DISCORD_TOKEN=${DISCORD_TOKEN}
       - LAVALINK_HOST=lavalink
     networks:

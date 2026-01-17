@@ -1,18 +1,16 @@
-server: # REST and WS server
+server:
   port: 2333
   address: 0.0.0.0
 lavalink:
   plugins:
-    # The official YouTube plugin (Critical since built-in YT support was removed in v4)
-    - dependency: "dev.lavalink.youtube:youtube-plugin:1.11.1"
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.16.0"
       repository: "https://maven.lavalink.dev/releases"
-    # LavaSrc for extra search capabilities (images, extended metadata)
-    - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.3.0"
+    - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.8.1"
       repository: "https://maven.lavalink.dev/releases"
   server:
     password: "youshallnotpass"
     sources:
-      youtube: false # Disabled built-in (deprecated), using plugin below
+      youtube: true
       bandcamp: true
       soundcloud: true
       twitch: true
@@ -24,6 +22,14 @@ lavalink:
     opusEncodingQuality: 10
     resamplingQuality: HIGH
     trackStuckThresholdMs: 10000
+    # IP ROTATION CONFIGURATION
+    ratelimit:
+      # Your specific Oracle IPv6 Block
+      ipBlocks: ["2603:c020:401e:4100::/64"]
+      excludedIps: []
+      strategy: "RotateOnBan"
+      searchTriggersFail: true
+      retryLimit: -1
 
 plugins:
   youtube:
@@ -31,10 +37,14 @@ plugins:
     allowSearch: true
     allowDirectVideoIds: true
     allowDirectPlaylistIds: true
-    clients: ["MUSIC", "ANDROID_VR", "WEB", "WEBEMBED"] # Prioritize Music client for quality
+    # Full YouTube setup prioritizes WEB client for best metadata/PoToken usage
+    clients: ["TV_HTML5_EMBEDDED", "ANDROID_TESTSUITE", "WEB"]
+    pot:
+      token: "MnhNr7FAg4JpJk2Tljj7TCRaE3-8kQp653E4SLJs_P1dTqwGUWjHRzocxgZYc27-a_imoH7NXPd5ZOtNEC9a2nxhylpQ7OORl7GLLWYfUttF-ouXIO6-fkaB9_-XOC4s_R7_7jnUbOYq4cx5r8zOElpaRIwrYX1NyI8="
+      visitorData: "Cgt4ZFhGS0tUMk04MCjFoavLBjIKCgJVUxIEGgAgDg%3D%3D"
   lavasrc:
     sources:
-      youtube: false # We use the specific youtube plugin above
+      youtube: false
       spotify: false
       applemusic: false
       deezer: false

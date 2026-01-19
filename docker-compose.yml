@@ -1,31 +1,30 @@
+version: "3.9"
+
 services:
-  lavalink:
-    image: ghcr.io/lavalink-devs/lavalink:4
-    container_name: lavalink
+  discord-music-bot:
+    container_name: discord-music-bot
+    build:
+      context: .
+      dockerfile: Dockerfile
+
     restart: unless-stopped
+
     environment:
-      # Increase memory for better performance on home server
-      - _JAVA_OPTIONS=-Xmx1G
+      NODE_ENV: production
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
+
     volumes:
-      - ./application.yml:/opt/Lavalink/application.yml
-      - ./plugins/:/opt/Lavalink/plugins/
-    ports:
-      - "2333:2333"
-    networks:
-      - bot-network
+      # Persist audio cache between restarts
+      - ./cache:/app/cache
 
-  bot:
-    build: .
-    container_name: music-bot
-    restart: unless-stopped
-    depends_on:
-      - lavalink
-    environment:
-      - DISCORD_TOKEN=${DISCORD_TOKEN}
-      - LAVALINK_HOST=lavalink
-    networks:
-      - bot-network
+      # Optional: bind application.yml explicitly
+      - ./application.yml:/app/application.yml:ro
 
-networks:
-  bot-network:
-    driver: bridge
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    stop_signal: SIGTERM
+    stop_grace_period: 15s

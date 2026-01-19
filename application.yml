@@ -1,32 +1,46 @@
-server:
-  port: 2333
-  address: 0.0.0.0
+app:
+  name: discord-music-bot
+  environment: production
 
-lavalink:
-  plugins:
-    - dependency: "dev.lavalink.youtube:youtube-plugin:1.11.4"
-      repository: "https://maven.lavalink.dev/releases"
-  server:
-    password: "youshallnotpass"
-    sources:
-      youtube: false
-      bandcamp: true
-      soundcloud: true
-      twitch: true
-      vimeo: true
-      http: true
-      local: false
-    bufferDurationMs: 400
-    frameBufferDurationMs: 5000
-    opusEncodingQuality: 10
-    resamplingQuality: HIGH
-    trackStuckThresholdMs: 10000
+discord:
+  token: ${DISCORD_TOKEN}
 
-plugins:
-  youtube:
+  intents:
+    guilds: true
+    guild_voice_states: true
+
+audio:
+  extractor:
+    provider: yt-dlp
+    binary: yt-dlp
+    search_prefix: ytsearch
+    max_search_results: 5
+
+  playback:
+    format: opus
+    sample_rate: 48000
+    channels: 2
+    volume: 1.0
+
+  cache:
     enabled: true
-    allowSearch: true
-    allowDirectVideoIds: true
-    allowDirectPlaylistIds: true
-    # Residential IP - standard clients work fine without OAuth
-    clients: ["MUSIC", "WEB", "TVHTML5EMBEDDED"]
+    directory: "./cache"
+    max_size_mb: 5120        # 5 GB soft limit
+    eviction_policy: lru     # planned (not yet enforced)
+
+  behavior:
+    auto_join: true
+    auto_disconnect: true
+    leave_on_empty: true
+    idle_timeout_seconds: 300
+
+logging:
+  level: info
+  discord: warn
+  audio: warn
+  yt_dlp: warn
+
+runtime:
+  node_env: production
+  docker: true
+  graceful_shutdown_timeout_seconds: 10

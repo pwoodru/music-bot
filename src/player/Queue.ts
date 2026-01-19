@@ -16,5 +16,13 @@ export class Queue<T> {
     get length() {
       return this.items.length;
     }
+
+    getAll(): T[] {
+      return [...this.items];
+    }
+
+    peek(): T | undefined {
+      return this.items[0];
+    }
   }
   
